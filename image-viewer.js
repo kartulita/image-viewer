@@ -9,7 +9,8 @@
 	 */
 
 	var defaultConfig = {
-newEl Class to add to images which have the imageViewer binding */
+
+		/* Class to add to images which have the imageViewer binding */
 		boundClass: 'image-viewer-bound',
 
 		/* Events which trigger the viewer */
@@ -18,128 +19,164 @@ newEl Class to add to images which have the imageViewer binding */
 		/* Events which close the view */
 		closeEvents: 'click keydown keypress blur',
 
-		/* Preview container ID */
-		previewContainerId: 'slider-preview-container',
-
 		/* Don't apply CSS from here (use if you style the viewer externally) */
 		useExternalCss: false,
 
 		/* High-quality image URL generator (default: same as source image) */
-		hiResImageGenerator: String.apply
+		hiResImageGenerator: identity,
+
+		/* Speed of viewer open animation */
+		openSpeed: 'fast'
 
 	};
 
+	var previewContainer;
+
+	/* Viewer container class */
+	var previewContainerClass = 'slider-preview-container';
+
+	/* Speed of viewer close animation */
+	var closeSpeed = 'fast';
+
 	/* Override hi-res image URL generator with ERR-specific generator */
-	defaultConfig.hiResImageGenerator = errHRImageGenerator;
+	//defaultConfig.hiResImageGenerator = errHRImageGenerator;
 
 	$.fn.imageViewer = imageViewer;
-
+	
 	/* Bind the image viewer to a set of images */
 	function imageViewer(options) {
-		var config = $.extend({}, defaultConfig, options);
-		$(this).find('img:not(.' + config.boundClass + ')').each(function() {
-			var el = $(this);
-			el.addClass(config.boundClass);
-			el.on(config.triggerEvents, function() {
-				previewImage(config, el);
+
+		var viewer = $.extend({}, defaultConfig, options);
+
+		/* Get/build the previewer */
+		if (!previewContainer) {
+			previewContainer = generateViewer(viewer);
+		}
+
+		viewer.open = openViewer;
+		viewer.preview = previewImage;
+
+		$(this).find('img:not(.' + viewer.boundClass + ')').each(function() {
+			var img = $(this);
+			img.addClass(viewer.boundClass);
+			img.on(viewer.triggerEvents, function() {
+				viewer.preview(img);
 			});
 		});
 	}
 
-	/* Launch the image viewer on the given image */
-	function previewImage(config, img) {
+	/* Generates the image viewer */
+	function generateViewer(viewer) {
+		previewContainer = $('<div></div>')
+			.addClass(previewContainerClass)
+			.css(viewer.useExternalCss ? {} : {
+				position: 'fixed', display: 'block', zIndex: 999999, top: 0,
+				left: 0, right: 0, bottom: 0, padding: 0, margin: 0,
+				border: 0, backgroundColor: 'rgba(255,255,255,0.6)'
+			})
+			.css({ opacity: 0 })
+			.on(viewer.closeEvents, closeViewer)
+			.appendTo($('body'));
+		$('<div></div>')
+			.css(viewer.useExternalCss ? {} : {
+				display: 'block', position: 'absolute', top: 0, left: 0,
+				right: 0, bottom: 0, overflow: 'hidden', margin: '40px',
+				padding: '20px', backgroundColor: '#222', borderRadius: '40px'
+			})
+			.appendTo(previewContainer);
+		$('<a></a>')
+			.addClass('close-button')
+			.css(viewer.useExternalCss ? {} : {
+				boxSizing: 'border-box', position: 'absolute',
+				display: 'block', right: '45px', top: '45px', width: '35px',
+				height: '35px', borderTopRightRadius: '35px',
+				borderBottomLeftRadius: '5px', background: '#444',
+				cursor: 'arrow'
+			})
+			.on('click', closeViewer)
+			.appendTo(previewContainer);
+		closeViewer();
+		return previewContainer;
+	}
 
-		/* Get/build the previewer */
-		var previewContainer = $('#' + config.previewContainerId);
-		if (!previewContainer.length) {
-			previewContainer = generatePreview(config);
-		}
+	/* Launch the image viewer on the given image */
+	function previewImage(img) {
 
 		/* Clear existing images from previewer */
 		var preview = previewContainer.find('div').first();
 		preview.empty();
 
 		/* Get high-quality image URL */
-		var src = config.hiResImageGenerator(img.attr('src'));
+		var loRes = img.attr('src');
+		var hiRes = this.hiResImageGenerator(loRes);
 
 		/* Low quality image (already loaded) */
 		var imgLo = $('<div></div>')
 			.css({
-				position: 'absolute', backgroundImage: 'url(' + img.attr('src') + ')',
+				position: 'absolute', backgroundImage: 'url(' + loRes + ')',
 				backgroundSize: 'contain', backgroundRepeat: 'no-repeat',
-				backgroundPosition: '50% 50%', borderRadius: '20px', left: 0,
-				top: 0, width: '100%', height: '100%', border: 0, zIndex: 1
+				backgroundPosition: '50% 50%',
+				left: '40px', top: '40px', right: '40px', bottom: '40px',
+				border: 0, zIndex: 1,
 			})
 			.appendTo(preview);
 
 		/* High quality image (loads asynchronously, overlays low quality image) */
 		var imgHi = $('<div></div>')
 			.css({
-				position: 'absolute', backgroundImage: 'url(' + src + ')',
+				position: 'absolute', backgroundImage: 'url(' + hiRes + ')',
 				backgroundSize: 'contain', backgroundRepeat: 'no-repeat',
-				backgroundPosition: '50% 50%', borderRadius: '20px', left: 0,
-				top: 0, width: '100%', height: '100%', border: 0, zIndex: 2
+				backgroundPosition: '50% 50%',
+				left: '40px', top: '40px', right: '40px', bottom: '40px',
+				border: 0, zIndex: 2,
 			})
 			.appendTo(preview);
 
 		/* Show preview */
+		this.open();
+
+	}
+
+	/* Opens the viewer */
+	function openViewer() {
 		previewContainer
+			.stop(true)
+			.removeClass('shown showing hidden hiding')
+			.addClass('showing')
 			.css({
 				pointerEvents: 'auto'
 			})
 			.animate({
 				opacity: 1
-			}, 'slow', 'swing');
-
+			}, this.openSpeed, 'swing')
+			.removeClass('shown showing hidden hiding')
+			.addClass('shown');
 	}
 
-	/* Generates the image previewer */
-	function generatePreview(config) {
-		var previewContainer = $('<div id="' + config.previewContainerId + '"></div>')
-			.css(useExternalCss ? {} : {
-				position: 'fixed', display: 'block', zIndex: 999999, top: 0,
-				left: 0, right: 0, bottom: 0, padding: 0, margin: 0,
-				border: 0
-			})
-			.css({ opacity: 0 })
-			.on(config.closeEvents, closePreview)
-			.appendTo($('body'));
-		$('<div></div>')
-			.css(useExternalCss ? {} : {
-				display: 'block', position: 'absolute', top: 0, left: 0,
-				right: 0, bottom: 0, overflow: 'hidden', margin: '40px',
-				padding: '20px', backgroundColor: '#222', borderRadius: '40px'
-			})
-			.appendTo(previewContainer);
-		$('<a>' + 'x' + '</a>')
-			.css(useExternalCss ? {} : {
-				boxSizing: 'border-box', position: 'absolute',
-				display: 'block', right: '45px', top: '45px', width: '35px',
-				height: '35px', borderTopRightRadius: '35px',
-				borderBottomLeftRadius: '5px', background: '#444',
-				color: '#aaa', cursor: 'arrow', textAlign: 'right',
-				padding: '15px 15px 0 0', lineHeight: 0, fontSize: 0
-			})
-			.on('click', closePreview)
-			.appendTo(previewContainer);
-		return previewContainer;
-	}
-
-	/* Closes the preview */
-	function closePreview() {
-		var previewContainer = $('#' + config.previewContainerId);
+	/* Closes the viewer */
+	function closeViewer() {
 		previewContainer
+			.stop(true)
+			.removeClass('shown showing hidden hiding')
+			.addClass('hiding')
 			.css({
 				pointerEvents: 'none'
 			})
 			.animate({
 				opacity: 0
-			}, 'fast', 'swing');
+			}, closeSpeed, 'swing')
+			.removeClass('shown showing hidden hiding')
+			.addClass('hidden');
+	}
+
+	/* Used for high-quality image URL generator */
+	function identity(s) {
+		return s;
 	}
 
 	/* Resizes image to window, sets appropriate quality, rounds corners */
 	function errHRImageGenerator(loRes) {
-		return = loRes
+		return loRes
 			.replace(/(width)(?:=\w+)/g, '$1=' + $(window).innerWidth())
 			.replace(/(height)(?:=\w+)/g, '$1=' + $(window).innerHeight())
 			.replace(/(quality)(?:=\w+)/g, '$1=80')

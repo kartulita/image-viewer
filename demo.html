@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf8">
+<title>Image-Viewer demo</title>
+<style>
+body {
+	padding: 20px 0;
+	background: white;
+	font-family: sans-serif;
+}
+.gallery {
+	width: 100%;
+	height: 200px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	background: #666;
+	text-align: center;
+	white-space: nowrap;
+	margin: 40px 0;
+	padding: 2px 0;
+	border-top: 1px solid #444;
+}
+.gallery img {
+	height: 100%;
+	width: auto;
+	border: 0;
+	display: inline-block;
+}
+.gallery img+img {
+	margin-left: 8px;
+}
+h2 {
+	font-size: 12pt;
+}
+body>* {
+	margin-left: 20px;
+}
+pre {
+	border-left: 3px solid #aaa;
+	background: #eee;
+	padding-left: 5px;
+}
+body>#htmlCode {
+	margin-left: 0;
+}
+</style>
+</head>
+<body>
+<h1>Image-viewer</h1>
+<strong>Mark K Cowan</strong>
+<p>Click / touch an image below to invoke the image viewer.</p>
+<div id="htmlCode">
+<div class="gallery">
+	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0060.jpg" alt="Finland">
+	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0152.jpg" alt="Estonia">
+	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0059.jpg" alt="Lithuania">
+	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0055.jpg" alt="Poland">
+	<img src="http://www.hackology.co.uk/wp-content/uploads/2014/01/DSC0168-2.jpg" alt="England">
+</div>
+</div>
+<h2>HTML code for this demo:</h2><pre><code id="egHtmlCode"></code></pre>
+<h2>JS code for this demo:</h2><pre><code id="egJsCode"></code></pre>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="image-viewer.js"></script>
+<script id="jsCode">
+$('.gallery').imageViewer();
+</script>
+<script>
+	var tr = /^\n/;
+	$('#egHtmlCode').text($('#htmlCode').html().replace(tr, ''));
+	$('#egJsCode').text($('#jsCode').html().replace(tr, ''));
+</script>
+</body>
+</html>
