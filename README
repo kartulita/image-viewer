@@ -1,8 +1,0 @@
-# Image-viewer
-
-To bind the viewer to a set of images:
-
-    var imageContainer = $('.gallery');
-    $.imageViewer(imageContainer);
-
-And you're done!
