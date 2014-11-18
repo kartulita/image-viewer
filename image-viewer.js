@@ -56,8 +56,11 @@
 		viewer.open = openViewer;
 		viewer.preview = previewImage;
 
-		$(this).find('img:not(.' + viewer.boundClass + ')').each(function() {
+		$(this).each(function() {
 			var img = $(this);
+			if (img.hasClass(viewer.boundClass)) {
+				return;
+			}
 			img.addClass(viewer.boundClass);
 			img.on(viewer.triggerEvents, function() {
 				viewer.preview(img);
