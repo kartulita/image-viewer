@@ -1,6 +1,11 @@
 @import url("/bower_components/components-font-awesome/css/font-awesome.css");
 
-.image-viewer {
+/*
+ * TODO: Get a designer to write this stylesheet out properly instead of all this
+ * absolute positioning hackery
+ */
+
+.image-viewer-container {
 	position: fixed;
 	display: block;
 	z-index: 999999;
@@ -11,7 +16,15 @@
 	padding: 0;
 	margin: 0;
 	border: 0;
-	background-color: rgba(255,255,255,0.6);
+	background-color: rgba(64,64,64, 0.8);
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 400ms ease;
+}
+
+.image-viewer-container.show {
+	pointer-events: auto;
+	opacity: 1;
 }
 
 .image-viewer-dialog {
@@ -24,28 +37,40 @@
 	overflow: hidden;
 	margin: 40px;
 	padding: 20px;
-	background-color: #222;
+	background-color: #111;
 	border-radius: 40px;
+	border: 1px solid #000;
 }
 
-.image-viewer-close-button {
+.image-viewer-close-button,
+.image-viewer-prev-button,
+.image-viewer-next-button {
+	background: #666;
 	box-sizing: border-box;
 	position: absolute;
 	display: block;
+	cursor: hand;
+	cursor: pointer;
+	color: #000;
+}
+
+.image-viewer-close-button:hover,
+.image-viewer-prev-button:hover,
+.image-viewer-next-button:hover {
+	color: #aaa;
+}
+
+.image-viewer-close-button {
 	right: 45px;
 	top: 45px;
 	width: 35px;
 	height: 35px;
-	cursor: pointer;
 	font-family: FontAwesome;
 	border-top-right-radius: 35px;
 	border-bottom-left-radius: 5px;
-	background: #444;
 	font-style: sans-serif;
 	font-size: 21px;
 	line-height: 21px;
-	cursor: hand;
-	cursor: pointer;
 }
 
 .image-viewer-close-button:before {
@@ -71,7 +96,7 @@
 	line-height: 63px;
 	padding: 0 7px;
 	color: #000;
-	background-color: #444;
+	background-color: #666;
 	cursor: hand;
 	cursor: pointer;
 	font-family: FontAwesome;

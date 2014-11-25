@@ -15,6 +15,9 @@
 		/* Prepend this to CSS class names */
 		classPrefix: 'image-viewer-',
 
+		/* Class to add to images when they're bound to the viewer */
+		boundClass: 'image-viewer-bound',
+
 		/* Events (on the source images) which trigger the viewer */
 		triggerEvents: 'click',
 
@@ -24,16 +27,10 @@
 		/* High-quality image URL generator (default: same as source image) */
 		hiResImageGenerator: identity,
 
-		/* Speed of viewer open animation */
-		openSpeed: 'fast'
-
 	};
 
 	/* Preview container (singleton), active viewer object, active image (element) */
 	var previewContainer, activeViewer, activeImage;
-
-	/* Speed of viewer close animation */
-	var closeSpeed = 'fast';
 
 	/* Override hi-res image URL generator with ERR-specific generator */
 	//defaultConfig.hiResImageGenerator = errHRImageGenerator;
@@ -72,7 +69,6 @@
 	function generateViewer(viewer) {
 		previewContainer = $('<div></div>')
 			.addClass(viewer.classPrefix + 'container')
-			.css({ opacity: 0 })
 			.on(viewer.closeEvents, closeViewer)
 			.on('swipe', touchNav)
 			.on('mousewheel DOMMouseScroll', wheelNav)
@@ -210,33 +206,13 @@
 	/* Opens the viewer */
 	function openViewer() {
 		previewContainer
-			.stop(true)
-			.removeClass('shown showing hidden hiding')
-			.addClass('showing')
-			.css({
-				pointerEvents: 'auto'
-			})
-			.animate({
-				opacity: 1
-			}, activeViewer.openSpeed, 'swing')
-			.removeClass('shown showing hidden hiding')
-			.addClass('shown');
+			.addClass('show');
 	}
 
 	/* Closes the viewer */
 	function closeViewer() {
 		previewContainer
-			.stop(true)
-			.removeClass('shown showing hidden hiding')
-			.addClass('hiding')
-			.css({
-				pointerEvents: 'none'
-			})
-			.animate({
-				opacity: 0
-			}, closeSpeed, 'swing')
-			.removeClass('shown showing hidden hiding')
-			.addClass('hidden');
+			.removeClass('show');
 		activeViewer = undefined;
 	}
 
