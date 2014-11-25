@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf8">
 <title>Image-Viewer demo</title>
-<link href="/src/image-viewer/image-viewer.css" rel="stylesheet">
+<script src="/bower_components/jquery/jquery.js"></script>
+<script src="/bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js"></script>
 <style>
 body {
 	padding: 20px 0;
@@ -45,6 +46,10 @@ pre {
 body>#htmlCode {
 	margin-left: 0;
 }
+/* Hide jQui loader */
+.ui-loader {
+	display: none;
+}
 </style>
 </head>
 <body>
@@ -52,21 +57,40 @@ body>#htmlCode {
 <strong>Mark K Cowan</strong>
 <p>Click / touch an image below to invoke the image viewer.</p>
 <div id="htmlCode">
-<div class="gallery">
+<!-- Includes -->
+<script src="/src/image-viewer/image-viewer.js"></script>
+<link href="/src/image-viewer/image-viewer.css" rel="stylesheet">
+
+<!-- Gallery #1 -->
+<div class="gallery" id="gallery1">
 	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0060.jpg" alt="Finland">
 	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0152.jpg" alt="Estonia">
 	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0059.jpg" alt="Lithuania">
 	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0055.jpg" alt="Poland">
 	<img src="http://www.hackology.co.uk/wp-content/uploads/2014/01/DSC0168-2.jpg" alt="England">
 </div>
+
+<!-- Gallery #2 -->
+<div class="gallery" id="gallery2">
+	<img src="http://hackology.co.uk/wp-content/uploads/2014/04/DSC0152.jpg" alt="Estonia">
+	<img src="http://www.hackology.co.uk/wp-content/uploads/2014/01/DSC0168-2.jpg" alt="England">
+</div>
 </div>
 <h2>HTML code for this demo:</h2><pre><code id="egHtmlCode"></code></pre>
 <h2>JS code for this demo:</h2><pre><code id="egJsCode"></code></pre>
-<script src="/bower_components/jquery/jquery.js"></script>
-<script src="/bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js"></script>
-<script src="/src/image-viewer/image-viewer.js"></script>
 <script id="jsCode">
-$('.gallery img').imageViewer();
+/*
+ * Each image viewer allows navigation through its respective image set.
+ * This is why we create two image viewers rather than just using
+ * $('.gallery img'), which would create a single viewer that cycles through all
+ * images in all galleries.
+ */
+
+/* Create an image viewer on the first set of images */
+$('#gallery1 img').imageViewer();
+
+/* Create an image viewer on the second set of images */
+$('#gallery2 img').imageViewer();
 </script>
 <script>
 	var tr = /^\n/;
