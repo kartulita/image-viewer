@@ -1,0 +1,108 @@
+@import url("/bower_components/components-font-awesome/css/font-awesome.css");
+
+.image-viewer {
+	position: fixed;
+	display: block;
+	z-index: 999999;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	background-color: rgba(255,255,255,0.6);
+}
+
+.image-viewer-dialog {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: hidden;
+	margin: 40px;
+	padding: 20px;
+	background-color: #222;
+	border-radius: 40px;
+}
+
+.image-viewer-close-button {
+	box-sizing: border-box;
+	position: absolute;
+	display: block;
+	right: 45px;
+	top: 45px;
+	width: 35px;
+	height: 35px;
+	cursor: pointer;
+	font-family: FontAwesome;
+	border-top-right-radius: 35px;
+	border-bottom-left-radius: 5px;
+	background: #444;
+	font-style: sans-serif;
+	font-size: 21px;
+	line-height: 21px;
+	cursor: hand;
+	cursor: pointer;
+}
+
+.image-viewer-close-button:before {
+	content: '\f00d';
+	position: relative;
+	left: 7px;
+	top: 7px;
+}
+
+.image-viewer-close-button:hover {
+	color: #aaa;
+}
+
+
+.image-viewer-prev-button,
+.image-viewer-next-button {
+	box-sizing: border-box;
+	position: absolute;
+	display: block;
+	top: 47%;
+	width: 35px;
+	height: 63px;
+	line-height: 63px;
+	padding: 0 7px;
+	color: #000;
+	background-color: #444;
+	cursor: hand;
+	cursor: pointer;
+	font-family: FontAwesome;
+	font-size: 42px;
+	vertical-align: middle;
+}
+
+.image-viewer-prev-button:hover,
+.image-viewer-next-button:hover {
+	color: #aaa;
+}
+
+.image-viewer-prev-button {
+	left: 45px;
+	border-top-left-radius: 21px 28px;
+	border-bottom-left-radius: 21px 28px;
+}
+
+.image-viewer-prev-button:before {
+	content: '\f100';
+	text-align: right;
+}
+
+.image-viewer-next-button {
+	right: 45px;
+	border-top-right-radius: 21px 28px;
+	border-bottom-right-radius: 21px 28px;
+}
+
+.image-viewer-next-button:before {
+	content: '\f101';
+	text-align: left;
+}
+

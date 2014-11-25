@@ -8,19 +8,18 @@
 	 * @version 0.0.1
 	 */
 
+	/* I hate jQuery */
+
 	var defaultConfig = {
 
-		/* Class to add to images which have the imageViewer binding */
-		boundClass: 'image-viewer-bound',
+		/* Prepend this to CSS class names */
+		classPrefix: 'image-viewer-',
 
-		/* Events which trigger the viewer */
+		/* Events (on the source images) which trigger the viewer */
 		triggerEvents: 'click',
 
-		/* Events which close the view */
+		/* Non-exhaustive list of events which close the view */
 		closeEvents: 'click keydown keypress blur',
-
-		/* Don't apply CSS from here (use if you style the viewer externally) */
-		useExternalCss: false,
 
 		/* High-quality image URL generator (default: same as source image) */
 		hiResImageGenerator: identity,
@@ -30,10 +29,8 @@
 
 	};
 
-	var previewContainer;
-
-	/* Viewer container class */
-	var previewContainerClass = 'slider-preview-container';
+	/* Preview container (singleton), active viewer object, active image (element) */
+	var previewContainer, activeViewer, activeImage;
 
 	/* Speed of viewer close animation */
 	var closeSpeed = 'fast';
@@ -42,6 +39,8 @@
 	//defaultConfig.hiResImageGenerator = errHRImageGenerator;
 
 	$.fn.imageViewer = imageViewer;
+	
+	$(document).on('keydown', keysNav)
 	
 	/* Bind the image viewer to a set of images */
 	function imageViewer(options) {
@@ -55,8 +54,9 @@
 
 		viewer.open = openViewer;
 		viewer.preview = previewImage;
+		viewer.images = $(this);
 
-		$(this).each(function() {
+		viewer.images.each(function() {
 			var img = $(this);
 			if (img.hasClass(viewer.boundClass)) {
 				return;
@@ -71,39 +71,114 @@
 	/* Generates the image viewer */
 	function generateViewer(viewer) {
 		previewContainer = $('<div></div>')
-			.addClass(previewContainerClass)
-			.css(viewer.useExternalCss ? {} : {
-				position: 'fixed', display: 'block', zIndex: 999999, top: 0,
-				left: 0, right: 0, bottom: 0, padding: 0, margin: 0,
-				border: 0, backgroundColor: 'rgba(255,255,255,0.6)'
-			})
+			.addClass(viewer.classPrefix + 'container')
 			.css({ opacity: 0 })
 			.on(viewer.closeEvents, closeViewer)
+			.on('swipe', touchNav)
+			.on('mousewheel DOMMouseScroll', wheelNav)
 			.appendTo($('body'));
 		$('<div></div>')
-			.css(viewer.useExternalCss ? {} : {
-				display: 'block', position: 'absolute', top: 0, left: 0,
-				right: 0, bottom: 0, overflow: 'hidden', margin: '40px',
-				padding: '20px', backgroundColor: '#222', borderRadius: '40px'
-			})
+			.addClass(viewer.classPrefix + 'dialog')
 			.appendTo(previewContainer);
 		$('<a></a>')
-			.addClass('close-button')
-			.css(viewer.useExternalCss ? {} : {
-				boxSizing: 'border-box', position: 'absolute',
-				display: 'block', right: '45px', top: '45px', width: '35px',
-				height: '35px', borderTopRightRadius: '35px',
-				borderBottomLeftRadius: '5px', background: '#444',
-				cursor: 'arrow'
-			})
+			.addClass(viewer.classPrefix + 'close-button')
 			.on('click', closeViewer)
+			.appendTo(previewContainer);
+		$('<a></a>')
+			.addClass(viewer.classPrefix + 'prev-button')
+			.on('click', prevImage)
+			.appendTo(previewContainer);
+		$('<a></a>')
+			.addClass(viewer.classPrefix + 'next-button')
+			.on('click', nextImage)
 			.appendTo(previewContainer);
 		closeViewer();
 		return previewContainer;
 	}
 
+	/* Touch/swipe navigation */
+	function touchNav(event) {
+		var dx = event.swipestop.coords[0] - event.swipestart.coords[0];
+		var dy = event.swipestop.coords[1] - event.swipestart.coords[1];
+		var th = Math.atan2(dy, dx);
+		var left = Math.abs(th) <= Math.PI / 4;
+		var right = (Math.PI - Math.abs(th)) <= Math.PI / 4;
+		if (left) {
+			prevImage(event);
+		} else if (right) {
+			nextImage(event);
+		} else {
+			closeViewer();
+		}
+	}
+
+	/* Keyboard (arrow keys) navigation */
+	function keysNav(event) {
+		if (!activeViewer) {
+			return;
+		}
+		var key = event.which;
+		if (key === 27) {
+			closeViewer();
+		} else if (key === 37) {
+			prevImage(event);
+		} else if (key === 39) {
+			nextImage(event);
+		}
+	}
+
+	/* Scroll-wheel navigation */
+	function wheelNav(event) {
+		var delta = event.originalEvent.wheelDelta || event.originalEvent.detail;
+		if (!delta) {
+			return;
+		}
+		if (delta < 0) {
+			prevImage(event);
+		} else {
+			nextImage(event);
+		}
+	}
+
+	/* Previous image */
+	function prevImage(event) {
+		deltaImage(-1);
+		if (event) {
+			event.stopPropagation();
+		}
+	}
+
+	/* Next image */
+	function nextImage(event) {
+		deltaImage(+1);
+		if (event) {
+			event.stopPropagation();
+		}
+	}
+
+	/* Move relative to current image in current image set */
+	function deltaImage(delta) {
+		var images = [].slice.apply(activeViewer.images);
+		var idx = images.indexOf(activeImage[0]);
+		if (idx === -1) {
+			return;
+		}
+		idx = (idx + images.length + delta) % images.length;
+		previewImage($(images[idx]));
+	}
+
 	/* Launch the image viewer on the given image */
 	function previewImage(img) {
+
+		if (this) {
+			activeViewer = this;
+		}
+
+		if (!activeViewer) {
+			return;
+		}
+
+		activeImage = img;
 
 		/* Clear existing images from previewer */
 		var preview = previewContainer.find('div').first();
@@ -111,7 +186,7 @@
 
 		/* Get high-quality image URL */
 		var loRes = img.attr('src');
-		var hiRes = this.hiResImageGenerator(loRes);
+		var hiRes = activeViewer.hiResImageGenerator(loRes);
 
 		/* Low quality image (already loaded) */
 		var imgLo = $('<div></div>')
@@ -136,7 +211,7 @@
 			.appendTo(preview);
 
 		/* Show preview */
-		this.open();
+		activeViewer.open();
 
 	}
 
@@ -151,7 +226,7 @@
 			})
 			.animate({
 				opacity: 1
-			}, this.openSpeed, 'swing')
+			}, activeViewer.openSpeed, 'swing')
 			.removeClass('shown showing hidden hiding')
 			.addClass('shown');
 	}
@@ -170,6 +245,7 @@
 			}, closeSpeed, 'swing')
 			.removeClass('shown showing hidden hiding')
 			.addClass('hidden');
+		activeViewer = undefined;
 	}
 
 	/* Used for high-quality image URL generator */

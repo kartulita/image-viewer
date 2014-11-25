@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf8">
 <title>Image-Viewer demo</title>
+<link href="/src/image-viewer/image-viewer.css" rel="stylesheet">
 <style>
 body {
 	padding: 20px 0;
@@ -61,8 +62,9 @@ body>#htmlCode {
 </div>
 <h2>HTML code for this demo:</h2><pre><code id="egHtmlCode"></code></pre>
 <h2>JS code for this demo:</h2><pre><code id="egJsCode"></code></pre>
-<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="image-viewer.js"></script>
+<script src="/bower_components/jquery/jquery.js"></script>
+<script src="/bower_components/jquery-mobile-bower/js/jquery.mobile-1.4.2.js"></script>
+<script src="/src/image-viewer/image-viewer.js"></script>
 <script id="jsCode">
 $('.gallery img').imageViewer();
 </script>
