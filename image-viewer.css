@@ -106,3 +106,28 @@
 	text-align: left;
 }
 
+.image-viewer-image-low {
+	position: absolute;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	left: 40px;
+	top: 40px;
+	right: 40px;
+	bottom: 40px;
+	border: 0;
+	z-index: 1;
+}
+
+.image-viewer-image-high {
+	position: absolute;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	left: 40px;
+	top: 40px;
+	right: 40px;
+	bottom: 40px;
+	border: 0;
+	z-index: 2;
+}

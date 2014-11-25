@@ -190,24 +190,16 @@
 
 		/* Low quality image (already loaded) */
 		var imgLo = $('<div></div>')
-			.css({
-				position: 'absolute', backgroundImage: 'url(' + loRes + ')',
-				backgroundSize: 'contain', backgroundRepeat: 'no-repeat',
-				backgroundPosition: '50% 50%',
-				left: '40px', top: '40px', right: '40px', bottom: '40px',
-				border: 0, zIndex: 1,
-			})
+			.addClass(activeViewer.classPrefix + 'image-low')
+			.css({ backgroundImage: 'url("' + loRes.replace(/"\\/g, '\\$1') + '")' })
+			.on('click', nextImage)
 			.appendTo(preview);
 
 		/* High quality image (loads asynchronously, overlays low quality image) */
 		var imgHi = $('<div></div>')
-			.css({
-				position: 'absolute', backgroundImage: 'url(' + hiRes + ')',
-				backgroundSize: 'contain', backgroundRepeat: 'no-repeat',
-				backgroundPosition: '50% 50%',
-				left: '40px', top: '40px', right: '40px', bottom: '40px',
-				border: 0, zIndex: 2,
-			})
+			.addClass(activeViewer.classPrefix + 'image-high')
+			.css({ backgroundImage: 'url("' + hiRes.replace(/"\\/g, '\\$1') + '")' })
+			.on('click', nextImage)
 			.appendTo(preview);
 
 		/* Show preview */
