@@ -13,7 +13,7 @@
 	var defaultConfig = {
 
 		/* Prepend this to CSS class names */
-		classPrefix: 'image-viewer-',
+		classPrefix: 'image-viewer',
 
 		/* Class to add to images when they're bound to the viewer */
 		boundClass: 'image-viewer-bound',
@@ -26,6 +26,9 @@
 
 		/* High-quality image URL generator (default: same as source image) */
 		hiResImageGenerator: identity,
+		
+		/* Buttons are in container or dialog? */
+		buttonParent: 'container'
 
 	};
 
@@ -67,27 +70,35 @@
 
 	/* Generates the image viewer */
 	function generateViewer(viewer) {
+		var prefix = viewer.classPrefix;
+		var buttonClass = prefix + '-button';
+		var buttonParent;
 		previewContainer = $('<div></div>')
-			.addClass(viewer.classPrefix + 'container')
+			.addClass(prefix + '-container')
 			.on(viewer.closeEvents, closeViewer)
 			.on('swipe', touchNav)
 			.on('mousewheel DOMMouseScroll', wheelNav)
 			.appendTo($('body'));
-		$('<div></div>')
-			.addClass(viewer.classPrefix + 'dialog')
+		var dialog = $('<div></div>')
+			.addClass(prefix + '-dialog')
 			.appendTo(previewContainer);
+		if (viewer.buttonParent === 'container') {
+			buttonParent = previewContainer;
+		} else if (viewer.buttonParent === 'dialog') {
+			buttonParent = dialog;
+		}
 		$('<a></a>')
-			.addClass(viewer.classPrefix + 'close-button')
+			.addClass(buttonClass + '-close ' + buttonClass)
 			.on('click', closeViewer)
-			.appendTo(previewContainer);
+			.appendTo(buttonParent);
 		$('<a></a>')
-			.addClass(viewer.classPrefix + 'prev-button')
+			.addClass(buttonClass + '-prev ' + buttonClass + '-nav ' + buttonClass)
 			.on('click', prevImage)
-			.appendTo(previewContainer);
+			.appendTo(buttonParent);
 		$('<a></a>')
-			.addClass(viewer.classPrefix + 'next-button')
+			.addClass(buttonClass + '-next ' + buttonClass + '-nav ' + buttonClass)
 			.on('click', nextImage)
-			.appendTo(previewContainer);
+			.appendTo(buttonParent);
 		closeViewer();
 		return previewContainer;
 	}
@@ -175,10 +186,20 @@
 		}
 
 		activeImage = img;
+		
+		var prefix = activeViewer.classPrefix;
+		var imageContainerClass = prefix + '-layers';
+		var imagePrefix = prefix + '-image';
 
 		/* Clear existing images from previewer */
 		var preview = previewContainer.find('div').first();
-		preview.empty();
+		preview.find('.' + imageContainerClass)
+			.remove();
+
+		/* Container */
+		var layers = $('<div></div')
+			.addClass(imageContainerClass)
+			.appendTo(preview);
 
 		/* Get high-quality image URL */
 		var loRes = img.attr('src');
@@ -186,17 +207,17 @@
 
 		/* Low quality image (already loaded) */
 		var imgLo = $('<div></div>')
-			.addClass(activeViewer.classPrefix + 'image-low')
+			.addClass(imagePrefix + '-low ' + imagePrefix)
 			.css({ backgroundImage: 'url("' + loRes.replace(/"\\/g, '\\$1') + '")' })
 			.on('click', nextImage)
-			.appendTo(preview);
+			.appendTo(layers);
 
 		/* High quality image (loads asynchronously, overlays low quality image) */
 		var imgHi = $('<div></div>')
-			.addClass(activeViewer.classPrefix + 'image-high')
+			.addClass(imagePrefix + '-high ' + imagePrefix)
 			.css({ backgroundImage: 'url("' + hiRes.replace(/"\\/g, '\\$1') + '")' })
 			.on('click', nextImage)
-			.appendTo(preview);
+			.appendTo(layers);
 
 		/* Show preview */
 		activeViewer.open();

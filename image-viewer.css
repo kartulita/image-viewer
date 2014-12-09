@@ -5,6 +5,95 @@
  * absolute positioning hackery
  */
 
+/*
+ * When the image-viewer is bound to an image (or a set of images), then those
+ * images have the image-viewer-bound classw added to them.
+ *
+ * The viewer itself has the following class structure:
+ *
+ *   +-image-viewer-container
+ *       |  [full-window container, may darken/lighten/block the page content]
+ *       |
+ *       +-image-viewer-dialog
+ *       |   |  [dialog for image viewer]
+ *       |   |
+ *       |   +-image-viewer-layers
+ *       |       |  [container for image viewer layers]
+ *       |       |
+ *       |       +-image-viewer-image
+ *       |       | image-viewer-image-low
+ *       |       |      [low-resolution image]
+ *       |       |
+ *       |       +-image-viewer-image
+ *       |         image-viewer-image-high
+ *       |              [high-resolution image]
+ *       |
+ *       +-image-viewer-button
+ *       | image-viewer-button-close
+ *       |      [close button]
+ *       |
+ *       +-image-viewer-button
+ *       | image-viewer-button-nav
+ *       | image-viewer-button-prev
+ *       |      [prev image button]
+ *       |
+ *       +-image-viewer-button
+ *         image-viewer-button-nav
+ *         image-viewer-button-next
+ *              [next image button]
+ *
+ * The buttons are in the -container rather than the -dialog because I was lazy
+ * rather than putting them within the dialog and positioning them relative to
+ * its boundaries.  They should be moved inside the -dialog.  To do this, edit
+ * around line 30 of the JS file and set defaultConfig.buttonParent to 'dialog'.
+ *
+ * That will result in the following class structure:
+ *
+ *   +-image-viewer-container
+ *       |  [full-window container, may darken/lighten/block the page content]
+ *       |
+ *       +-image-viewer-dialog
+ *           |  [dialog for image viewer]
+ *           |
+ *           +-image-viewer-button
+ *           | image-viewer-button-close
+ *           |      [close button]
+ *           |
+ *           +-image-viewer-button
+ *           | image-viewer-button-nav
+ *           | image-viewer-button-prev
+ *           |      [prev image button]
+ *           |
+ *           +-image-viewer-button
+ *           | image-viewer-button-nav
+ *           | image-viewer-button-next
+ *           |      [next image button]
+ *           |
+ *           +-image-viewer-layers
+ *               |  [container for image viewer layers]
+ *               |
+ *               +-image-viewer-image
+ *               | image-viewer-image-low
+ *               |      [low-resolution image]
+ *               |
+ *               +-image-viewer-image
+ *                 image-viewer-image-high
+ *                      [high-resolution image]
+ *    
+ *
+ * The two image-viewer-image- elements are layers, which must have the same
+ * boundary co-ordinates and backround- properties (particularly size/position).
+ *
+ * The low-resolution image is taken from the <img> element, so displays without
+ * delay since the browser has already loaded it.  The high-resolution image is
+ * loaded dynamically and layered on top of the low-quality image, so that the
+ * user can see a high-quality version of the image, but does get a blank box or
+ * a "loading" spinner while the high-quality version is loading.
+ *
+ * For transparent images, the low-resolution image should be hidden after the
+ * high-resolution one has loaded, this is a TODO item for the javascript file.
+ */
+
 .image-viewer-container {
 	position: fixed;
 	display: block;
@@ -42,9 +131,7 @@
 	border: 1px solid #000;
 }
 
-.image-viewer-close-button,
-.image-viewer-prev-button,
-.image-viewer-next-button {
+.image-viewer-button {
 	background: #666;
 	box-sizing: border-box;
 	position: absolute;
@@ -54,13 +141,11 @@
 	color: #000;
 }
 
-.image-viewer-close-button:hover,
-.image-viewer-prev-button:hover,
-.image-viewer-next-button:hover {
+.image-viewer-button:hover {
 	color: #aaa;
 }
 
-.image-viewer-close-button {
+.image-viewer-button-close {
 	right: 45px;
 	top: 45px;
 	width: 35px;
@@ -73,20 +158,19 @@
 	line-height: 21px;
 }
 
-.image-viewer-close-button:before {
+.image-viewer-button-close:before {
 	content: '\f00d';
 	position: relative;
 	left: 7px;
 	top: 7px;
 }
 
-.image-viewer-close-button:hover {
+.image-viewer-button-close:hover {
 	color: #aaa;
 }
 
 
-.image-viewer-prev-button,
-.image-viewer-next-button {
+.image-viewer-button-nav {
 	box-sizing: border-box;
 	position: absolute;
 	display: block;
@@ -104,34 +188,33 @@
 	vertical-align: middle;
 }
 
-.image-viewer-prev-button:hover,
-.image-viewer-next-button:hover {
+.image-viewer-button-nav:hover {
 	color: #aaa;
 }
 
-.image-viewer-prev-button {
+.image-viewer-button-prev {
 	left: 45px;
 	border-top-left-radius: 21px 28px;
 	border-bottom-left-radius: 21px 28px;
 }
 
-.image-viewer-prev-button:before {
+.image-viewer-button-prev:before {
 	content: '\f100';
 	text-align: right;
 }
 
-.image-viewer-next-button {
+.image-viewer-button-next {
 	right: 45px;
 	border-top-right-radius: 21px 28px;
 	border-bottom-right-radius: 21px 28px;
 }
 
-.image-viewer-next-button:before {
+.image-viewer-button-next:before {
 	content: '\f101';
 	text-align: left;
 }
 
-.image-viewer-image-low {
+.image-viewer-image {
 	position: absolute;
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -141,18 +224,12 @@
 	right: 40px;
 	bottom: 40px;
 	border: 0;
+}
+
+.image-viewer-image-low {
 	z-index: 1;
 }
 
 .image-viewer-image-high {
-	position: absolute;
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: 50% 50%;
-	left: 40px;
-	top: 40px;
-	right: 40px;
-	bottom: 40px;
-	border: 0;
 	z-index: 2;
 }

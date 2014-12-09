@@ -1,0 +1,25 @@
+{
+	"name": "image-viewer",
+	"version": "0.0.1",
+	"authors": [
+		"Mark K Cowan <mark@battlesnake.co.uk>"
+	],
+	"description": "jQuery image viewer",
+	"moduleType": [
+		"globals"
+	],
+	"license": "MIT",
+	"homepage": "github.com/image-viewer",
+	"private": true,
+	"ignore": [
+		"*.swp",
+		"*.swo",
+		"bower_components",
+		"**/.*"
+	],
+	"dependencies": {
+		"jquery": "~1.10.2",
+		"jquery-mobile-bower": "~1.4.2",
+		"components-font-awesome": "*"
+	}
+}
