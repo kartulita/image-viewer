@@ -1,9 +1,6 @@
-@import url("/bower_components/components-font-awesome/css/font-awesome.css");
+@import url("bower_components/components-font-awesome/css/font-awesome.css");
 
-/*
- * TODO: Get a designer to write this stylesheet out properly instead of all this
- * absolute positioning hackery
- */
+/* Mark K Cowan & Maret Kruve */
 
 /*
  * When the image-viewer is bound to an image (or a set of images), then those
@@ -105,7 +102,7 @@
 	padding: 0;
 	margin: 0;
 	border: 0;
-	background-color: rgba(64,64,64, 0.8);
+	background-color: rgba(0,0,0, 0.95);
 	pointer-events: none;
 	opacity: 0;
 	transition: opacity 400ms ease;
@@ -124,49 +121,48 @@
 	right: 0;
 	bottom: 0;
 	overflow: hidden;
-	margin: 40px;
-	padding: 20px;
-	background-color: #111;
-	border-radius: 40px;
-	border: 1px solid #000;
+	margin: 20px;
 }
 
 .image-viewer-button {
-	background: #666;
 	box-sizing: border-box;
 	position: absolute;
+	z-index: 999;
 	display: block;
-	cursor: hand;
-	cursor: pointer;
-	color: #000;
+	color: #fff;
+	opacity: 0.3;
+	vertical-align: middle;
+	text-align: center;
+	text-shadow: 1px 1px 0px #000;
+	-webkit-transition: all 500ms ease-out;
+	-moz-transition: all 500ms ease-out;
+	-o-transition: all 500ms ease-out;
+	transition: all 500ms ease-out;
 }
 
 .image-viewer-button:hover {
-	color: #aaa;
+	color: #fff;
+	cursor: pointer;
+	opacity: 1;
 }
 
 .image-viewer-button-close {
-	right: 45px;
-	top: 45px;
-	width: 35px;
-	height: 35px;
+	right: 0px;
+	top: 0px;
 	font-family: FontAwesome;
-	border-top-right-radius: 35px;
-	border-bottom-left-radius: 5px;
 	font-style: sans-serif;
-	font-size: 21px;
-	line-height: 21px;
+	font-size: 25px;
+	padding: 25px; /*may-be needs to be bigger, test on mobile if you can hit it good*/
+}
+
+.image-viewer-button-close:hover {
+	font-size: 35px;
+	color: #E02828;
 }
 
 .image-viewer-button-close:before {
 	content: '\f00d';
 	position: relative;
-	left: 7px;
-	top: 7px;
-}
-
-.image-viewer-button-close:hover {
-	color: #aaa;
 }
 
 
@@ -174,44 +170,33 @@
 	box-sizing: border-box;
 	position: absolute;
 	display: block;
-	top: 47%;
-	width: 35px;
-	height: 63px;
-	line-height: 63px;
-	padding: 0 7px;
-	color: #000;
-	background-color: #666;
-	cursor: hand;
-	cursor: pointer;
+	top: 50%;
+	font-size: 50px;
+	margin-top: -145px; /* = minus half of the height (including padding) */
 	font-family: FontAwesome;
-	font-size: 42px;
-	vertical-align: middle;
-}
-
-.image-viewer-button-nav:hover {
-	color: #aaa;
+	padding: 120px 50px;
 }
 
 .image-viewer-button-prev {
-	left: 45px;
-	border-top-left-radius: 21px 28px;
-	border-bottom-left-radius: 21px 28px;
+	left: 0;
 }
 
 .image-viewer-button-prev:before {
-	content: '\f100';
+	content: '\f104';
 	text-align: right;
 }
 
 .image-viewer-button-next {
-	right: 45px;
-	border-top-right-radius: 21px 28px;
-	border-bottom-right-radius: 21px 28px;
+	right: 0;
 }
 
 .image-viewer-button-next:before {
-	content: '\f101';
+	content: '\f105';
 	text-align: left;
+}
+.image-viewer-button-nav:hover {
+	font-size: 80px;
+	margin-top: -160px;
 }
 
 .image-viewer-image {
@@ -219,10 +204,10 @@
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
-	left: 40px;
-	top: 40px;
-	right: 40px;
-	bottom: 40px;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
 	border: 0;
 }
 
