@@ -235,6 +235,7 @@
 	function openViewer() {
 		previewContainer
 			.addClass('show');
+		history.pushState({ viewerIsOpen: true }, undefined, '#viewer-is-open');
 	}
 
 	/* Closes the viewer */
@@ -242,7 +243,18 @@
 		previewContainer
 			.removeClass('show');
 		activeViewer = undefined;
+		if (location.hash === '#viewer-is-open') {
+			history.popState();
+		}
 	}
+
+	function statePopped(event) {
+		if (!event.state.viewerIsOpen) {
+			closeViewer();
+		}
+	}
+
+	window.addEventListener('popstate', statePopped);
 
 	/* Scroll active image into view (behind viewer) */
 	function scrollImageIntoView(img) {
