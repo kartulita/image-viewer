@@ -28,7 +28,10 @@
 		hiResImageGenerator: identity,
 		
 		/* Buttons are in container or dialog? */
-		buttonParent: 'container'
+		buttonParent: 'container',
+
+		/* Called when an image is viewed */
+		onView: scrollImageIntoView
 
 	};
 
@@ -40,7 +43,7 @@
 
 	$.fn.imageViewer = imageViewer;
 	
-	$(document).on('keydown', keysNav)
+	$(document).on('keydown', keysNav);
 	
 	/* Bind the image viewer to a set of images */
 	function imageViewer(options) {
@@ -222,6 +225,10 @@
 		/* Show preview */
 		activeViewer.open();
 
+		if (activeViewer.onView) {
+			activeViewer.onView(activeImage);
+		}
+
 	}
 
 	/* Opens the viewer */
@@ -235,6 +242,13 @@
 		previewContainer
 			.removeClass('show');
 		activeViewer = undefined;
+	}
+
+	/* Scroll active image into view (behind viewer) */
+	function scrollImageIntoView(img) {
+		$('html, body').stop(true).animate({
+			scrollTop: img.offset().top - 100
+		}, 2000);
 	}
 
 	/* Used for high-quality image URL generator */
