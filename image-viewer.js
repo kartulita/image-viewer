@@ -232,7 +232,9 @@
 	function openViewer() {
 		previewContainer
 			.addClass('show');
-		history.pushState({ viewerIsOpen: true }, undefined, '#viewer-is-open');
+		if (!history.state.viewerIsOpen) {
+			history.pushState({ viewerIsOpen: true }, undefined, location.href);
+		}
 	}
 
 	/* Closes the viewer */
@@ -240,7 +242,7 @@
 		previewContainer
 			.removeClass('show');
 		activeViewer = undefined;
-		if (location.hash === '#viewer-is-open') {
+		if (history.state.viewerIsOpen) {
 			history.popState();
 		}
 	}
