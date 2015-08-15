@@ -38,9 +38,6 @@
 	/* Preview container (singleton), active viewer object, active image (element) */
 	var previewContainer, activeViewer, activeImage;
 
-	/* Override hi-res image URL generator with ERR-specific generator */
-	//defaultConfig.hiResImageGenerator = errHRImageGenerator;
-
 	$.fn.imageViewer = imageViewer;
 	
 	$(document).on('keydown', keysNav);
@@ -266,15 +263,6 @@
 	/* Used for high-quality image URL generator */
 	function identity(s) {
 		return s;
-	}
-
-	/* Resizes image to window, sets appropriate quality, rounds corners */
-	function errHRImageGenerator(loRes) {
-		return loRes
-			.replace(/(width)(?:=\w+)/g, '$1=' + $(window).innerWidth())
-			.replace(/(height)(?:=\w+)/g, '$1=' + $(window).innerHeight())
-			.replace(/(quality)(?:=\w+)/g, '$1=80')
-			.replace(/$/, '&s.roundcorners=10');
 	}
 
 })(window.$ || window.jQuery);
