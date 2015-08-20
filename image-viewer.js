@@ -232,25 +232,32 @@
 	function openViewer() {
 		previewContainer
 			.addClass('show');
-		if (!history.state.viewerIsOpen) {
+		if (!stateIsOpen()) {
 			history.pushState({ viewerIsOpen: true }, undefined, location.href);
 		}
 	}
 
 	/* Closes the viewer */
 	function closeViewer() {
+		if (!previewContainer.hasClass('show')) {
+			return;
+		}
 		previewContainer
 			.removeClass('show');
 		activeViewer = undefined;
-		if (history.state.viewerIsOpen) {
-			history.popState();
+		if (!stateIsOpen()) {
+			history.go(-1);
 		}
 	}
 
 	function statePopped(event) {
-		if (!event.state.viewerIsOpen) {
+		if (!stateIsOpen()) {
 			closeViewer();
 		}
+	}
+
+	function stateIsOpen() {
+		return history.state && history.state.viewerIsOpen;
 	}
 
 	window.addEventListener('popstate', statePopped);
