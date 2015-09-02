@@ -125,7 +125,7 @@
 .image-viewer-button {
 	box-sizing: border-box;
 	position: absolute;
-	z-index: 999;
+	z-index: 1000;
 	display: block;
 	color: #fff;
 	opacity: 0.3;
@@ -145,6 +145,7 @@
 }
 
 .image-viewer-button-close {
+	z-index: 1001;
 	right: 0px;
 	top: 0px;
 	font-family: FontAwesome;
